@@ -124,6 +124,8 @@ module JasperRails
       end
     end
 
+    PARAM_BLACK_LIST = ["true", "false", "{}"]
+
     # Returns the value without conversion when it's converted to Java Types.
     # When isn't a Rjb class, returns a Java String of it.
     def parameter_value_of(param)
@@ -132,10 +134,13 @@ module JasperRails
       # Rjb::Rjb_JavaProxy, so the Rjb_JavaProxy parent is the Rjb module itself.
       if param.class.parent == Rjb
         param
+      # BUG found using ruby 2.2.2
+      elsif PARAM_BLACK_LIST.include?(param.to_s)
+        _String.new param.to_s
       else
         _String.new(param.to_s, "UTF-8")
       end
     end
-    
+
   end
 end
